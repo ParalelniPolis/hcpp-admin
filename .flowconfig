@@ -1,0 +1,12 @@
+[ignore]
+<PROJECT_ROOT>/node_modules/
+[include]
+<PROJECT_ROOT>/components/
+<PROJECT_ROOT>/pages/
+<PROJECT_ROOT>/lib/
+[libs]
+<PROJECT_ROOT>/types/
+
+[options]
+
+[lints]

@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "flow": "flow"
   },
   "dependencies": {
     "graphql": "^0.10.5",
@@ -18,5 +19,10 @@
     "redux": "^3.6.0"
   },
   "author": "Pavel Ševčík <pajaseviwow@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "flow-bin": "^0.50.0"
+  }
 }
