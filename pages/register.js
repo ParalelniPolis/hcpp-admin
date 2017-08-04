@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import Link from 'next/link';
+import Router from 'next/router';
 import { Button, Form, Grid, Header, Image, Input, Message, Segment } from 'semantic-ui-react';
 import { graphql, withApollo, compose } from 'react-apollo';
 import { connect } from 'react-redux';
@@ -29,6 +30,16 @@ class Register extends React.Component {
 
 		return {};
 	}
+
+	componentDidMount = () => {
+		Router.onRouteChangeStart = url => {
+			this.props.setInitialState();
+		};
+	};
+
+	componentWillUnmount = () => {
+		Router.onRouteChangeStart = null;
+	};
 
 	validateAndPost = (event) => {
 		/* global FormData */

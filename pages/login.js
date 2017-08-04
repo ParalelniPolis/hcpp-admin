@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import Link from 'next/link';
+import Router from 'next/router';
 import { Button, Form, Grid, Header, Image, Input, Message, Segment } from 'semantic-ui-react';
 import { graphql, withApollo, compose } from 'react-apollo';
 import { connect } from 'react-redux';
@@ -30,34 +31,44 @@ class Login extends React.Component {
 		return {};
 	}
 
-  validateAndPost = (event) => {
-    /* global FormData */
-    const data = new FormData(event.target);
+	componentDidMount = () => {
+		Router.onRouteChangeStart = url => {
+			this.props.setInitialState();
+		};
+	};
 
-    event.preventDefault();
-    event.stopPropagation();
+	componentWillUnmount = () => {
+		Router.onRouteChangeStart = null;
+	};
 
-    const errors = {};
-    const email = data.get('email');
-    const password = data.get('password');
+	validateAndPost = (event) => {
+		/* global FormData */
+		const data = new FormData(event.target);
 
-    if (!validator.isEmail(email)) {
-      errors.email = 'E-mail is invalid';
-    }
-    if (validator.isEmpty(password)) {
-      errors.password = 'Password required';
-    }
+		event.preventDefault();
+		event.stopPropagation();
 
-    this.props.errorSet(errors);
+		const errors = {};
+		const email = data.get('email');
+		const password = data.get('password');
 
-    if(!Object.keys(errors).length) {
-      this.props.loadingStart();
-      this.props.signin({ email, password });
-    }
-  };
+		if (!validator.isEmail(email)) {
+			errors.email = 'E-mail is invalid';
+		}
+		if (validator.isEmpty(password)) {
+			errors.password = 'Password required';
+		}
+
+		this.props.errorSet(errors);
+
+		if (!Object.keys(errors).length) {
+			this.props.loadingStart();
+			this.props.signin({ email, password });
+		}
+	};
 
 	render() {
-    const { ui, errors } = this.props.loginForm;
+		const { ui, errors } = this.props.loginForm;
 
 		return (
 			<App>
@@ -97,16 +108,16 @@ class Login extends React.Component {
 									placeholder="Password"
 									error={!!errors.password}
 								/>
-                {ui.error &&
+								{ui.error &&
 								<Message error={ui.error}>
 									<Message.Header>Form has errors</Message.Header>
 									<Message.List>
-                    {Object.keys(errors).map(error => (
+										{Object.keys(errors).map(error => (
 											<Message.Item key={error}><strong>{errors[error]}</strong></Message.Item>
-                    ))}
+										))}
 									</Message.List>
 								</Message>
-                }
+								}
 								<Button color='teal' fluid size='large' type="submit">Login</Button>
 							</Segment>
 						</Form>
@@ -125,7 +136,7 @@ export default compose(
 	withData,
 	// withApollo exposes `this.props.client` used when logging out
 	withApollo,
-  connect(state => ({ loginForm: state.loginForm }), { ...loginActions }),
+	connect(state => ({ loginForm: state.loginForm }), { ...loginActions }),
 	graphql(
 		// The `signinUser` mutation is provided by graph.cool by default
 		gql`

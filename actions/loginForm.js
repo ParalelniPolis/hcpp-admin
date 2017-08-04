@@ -19,3 +19,9 @@ export function errorSet(errors: Object) {
     value: errors
   }
 }
+
+export function setInitialState() {
+  return {
+    type: Constants.SET_INITIAL
+  }
+}
