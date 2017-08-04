@@ -3,6 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Button, Form, Grid, Header, Image, Input, Message, Segment } from 'semantic-ui-react';
 import { graphql, withApollo, compose } from 'react-apollo';
+import { connect } from 'react-redux';
 import cookie from 'cookie';
 import gql from 'graphql-tag';
 import validator from 'validator';
@@ -11,6 +12,8 @@ import withData from '../lib/withData';
 import redirect from '../lib/redirect';
 import checkLoggedIn from '../lib/checkLoggedIn';
 import App from '../components/App';
+
+import * as registerActions from '../actions/registerForm';
 
 import type { Element } from 'react';
 
@@ -27,15 +30,6 @@ class Register extends React.Component {
 		return {};
 	}
 
-	state = {
-		errors: {},
-		loading: false
-	};
-
-	validate = () => {
-
-	};
-
 	validateAndPost = (event) => {
 		/* global FormData */
 		const data = new FormData(event.target);
@@ -47,36 +41,32 @@ class Register extends React.Component {
 		const name = data.get('name');
 		const email = data.get('email');
 		const password = data.get('password');
-		const passwordRepeat = data.get('password-repeat');
+		const passwordAgain = data.get('passwordAgain');
 
 		if (validator.isEmpty(name)) {
-			errors.name = 'Field is empty';
+			errors.name = 'Please fill out your name';
 		}
-		if (validator.isEmail(email)) {
+		if (!validator.isEmail(email)) {
 			errors.email = 'E-mail is invalid';
 		}
-		if (validator.isLength(password, { min: 6 })) {
+		if (!validator.isLength(password, { min: 6 })) {
 			errors.password = 'Password requires minimum of 6 characters';
 		}
-		if (validator.equals(password, passwordRepeat)) {
-			errors.passwordRepeat = 'Passwords do not match';
+		if (!validator.equals(password, passwordAgain)) {
+			errors.passwordAgain = 'Passwords do not match';
 		}
 
-		this.setState({
-			...this.state,
-			errors
-		});
+		this.props.errorSet(errors);
 
-		if (Object.keys(errors).length === 0) {
-			this.setState({
-				...this.state,
-				loading: true
-			});
+		if(!Object.keys(errors).length) {
+			this.props.loadingStart();
 			this.props.create({ email, name, password });
-		}
+    }
 	};
 
 	render() {
+		const { ui, errors } = this.props.registerForm;
+
 		return (
 			<App>
 				<style jsx global>{`
@@ -91,52 +81,57 @@ class Register extends React.Component {
 					style={{ height: '100%' }}
 					verticalAlign='middle'
 				>
-					<Grid.Column style={{ maxWidth: 450 }}>
+					<Grid.Column style={{ width: 320 }}>
 						<Header as='h2' color='teal' textAlign='center'>
 							<Image src='/static/images/logo.png' />
 							{' '}Create new account
 						</Header>
-						<Form size='large' onSubmit={this.validateAndPost} error={Object.keys(this.state.errors).length !== 0} loading={this.state.loading}>
+						<Form size='large' onSubmit={this.validateAndPost} error={ui.error} loading={ui.loading}>
 							<Segment stacked>
 								<Form.Input
 									fluid
-									name='name'
-									icon='user'
-									iconPosition='left'
-									placeholder='Full name'
-									error={!!this.state.errors.name}
+									icon="user"
+									iconPosition="left"
+									name="name"
+									placeholder="Full name"
+									error={!!errors.name}
 								/>
 								<Form.Input
 									fluid
-									name='email'
-									icon='mail'
-									iconPosition='left'
-									placeholder='E-mail address'
-									error={!!this.state.errors.email}
+									icon="mail"
+									iconPosition="left"
+									name="email"
+									placeholder="E-mail address"
+									error={!!errors.email}
 								/>
 								<Form.Input
 									fluid
-									name='password'
-									icon='lock'
-									iconPosition='left'
-									placeholder='Password'
-									type='password'
-									error={!!this.state.errors.password}
+									icon="lock"
+									iconPosition="left"
+									name="password"
+									type="password"
+									placeholder="Password"
+									error={!!errors.password}
 								/>
 								<Form.Input
 									fluid
-									name='password-repeat'
-									icon='lock'
-									iconPosition='left'
-									placeholder='Password again'
-									type='password'
-									error={!!this.state.errors.passwordRepeat}
+									icon="lock"
+									iconPosition="left"
+									name="passwordAgain"
+									type="password"
+									placeholder="Password again"
+									error={!!errors.passwordAgain}
 								/>
-								<Message error>
-									{Object.keys(this.state.errors).map(error => (
-										<p key={error}>{error}: {this.state.errors[error]}</p>
-									))}
-								</Message>
+                {ui.error &&
+									<Message error={ui.error}>
+										<Message.Header>Form has errors</Message.Header>
+										<Message.List>
+                      {Object.keys(errors).map(error => (
+												<Message.Item key={error}><strong>{errors[error]}</strong></Message.Item>
+											))}
+										</Message.List>
+									</Message>
+                }
 								<Button type='submit' color='teal' fluid size='large'>Create account</Button>
 							</Segment>
 						</Form>
@@ -155,13 +150,14 @@ export default compose(
 	withData,
 	// withApollo exposes `this.props.client` used when logging out
 	withApollo,
+	connect(state => ({ registerForm: state.registerForm }), { ...registerActions }),
 	graphql(
 		// The `createUser` & `signinUser` mutations are provided by graph.cool by
 		// default.
 		// Multiple mutations are executed by graphql sequentially
 		gql`
       mutation Create($name: String!, $email: String!, $password: String!) {
-        createUser(name: $name, authProvider: { email: { email: $email, password: $password }}) {
+        createUser(name: $name, role: USER, authProvider: { email: { email: $email, password: $password }}) {
           id
         }
         signinUser(email: { email: $email, password: $password }) {

@@ -3,13 +3,17 @@ import React from 'react';
 import Link from 'next/link';
 import { Button, Form, Grid, Header, Image, Input, Message, Segment } from 'semantic-ui-react';
 import { graphql, withApollo, compose } from 'react-apollo';
+import { connect } from 'react-redux';
 import cookie from 'cookie';
 import gql from 'graphql-tag';
+import validator from 'validator';
 
 import withData from '../lib/withData';
 import redirect from '../lib/redirect';
 import checkLoggedIn from '../lib/checkLoggedIn';
 import App from '../components/App';
+
+import * as loginActions from '../actions/loginForm';
 
 import type { Element } from 'react';
 
@@ -26,7 +30,35 @@ class Login extends React.Component {
 		return {};
 	}
 
+  validateAndPost = (event) => {
+    /* global FormData */
+    const data = new FormData(event.target);
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const errors = {};
+    const email = data.get('email');
+    const password = data.get('password');
+
+    if (!validator.isEmail(email)) {
+      errors.email = 'E-mail is invalid';
+    }
+    if (validator.isEmpty(password)) {
+      errors.password = 'Password required';
+    }
+
+    this.props.errorSet(errors);
+
+    if(!Object.keys(errors).length) {
+      this.props.loadingStart();
+      this.props.signin({ email, password });
+    }
+  };
+
 	render() {
+    const { ui, errors } = this.props.loginForm;
+
 		return (
 			<App>
 				<style jsx global>{`
@@ -46,25 +78,36 @@ class Login extends React.Component {
 							<Image src='/static/images/logo.png' />
 							{' '}Log-in to your account
 						</Header>
-						<Form onSubmit={this.props.signin} size='large'>
+						<Form size='large' onSubmit={this.validateAndPost} error={ui.error} loading={ui.loading}>
 							<Segment stacked>
 								<Form.Input
 									fluid
-									name='email'
-									icon='mail'
-									iconPosition='left'
-									placeholder='E-mail address'
+									icon="mail"
+									iconPosition="left"
+									name="email"
+									placeholder="E-mail address"
+									error={!!errors.email}
 								/>
 								<Form.Input
 									fluid
-									name='password'
-									icon='lock'
-									iconPosition='left'
-									placeholder='Password'
-									type='password'
+									icon="lock"
+									iconPosition="left"
+									name="password"
+									type="password"
+									placeholder="Password"
+									error={!!errors.password}
 								/>
-
-								<Button color='teal' fluid size='large'>Login</Button>
+                {ui.error &&
+								<Message error={ui.error}>
+									<Message.Header>Form has errors</Message.Header>
+									<Message.List>
+                    {Object.keys(errors).map(error => (
+											<Message.Item key={error}><strong>{errors[error]}</strong></Message.Item>
+                    ))}
+									</Message.List>
+								</Message>
+                }
+								<Button color='teal' fluid size='large' type="submit">Login</Button>
 							</Segment>
 						</Form>
 						<Message>
@@ -82,6 +125,7 @@ export default compose(
 	withData,
 	// withApollo exposes `this.props.client` used when logging out
 	withApollo,
+  connect(state => ({ loginForm: state.loginForm }), { ...loginActions }),
 	graphql(
 		// The `signinUser` mutation is provided by graph.cool by default
 		gql`
@@ -101,17 +145,12 @@ export default compose(
 								ownProps: { client }
 							}) => ({
 				// `signin` is the name of the prop passed to the component
-				signin: (event) => {
-					/* global FormData */
-					const data = new FormData(event.target);
-
-					event.preventDefault();
-					event.stopPropagation();
+				signin: ({ email, password }) => {
 
 					signinWithEmail({
 						variables: {
-							email: data.get('email'),
-							password: data.get('password')
+							email,
+							password
 						}
 					}).then(({ data: { signinUser: { token } } }) => {
 						// Store the token in cookie
