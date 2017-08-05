@@ -32,13 +32,13 @@ class Register extends React.Component {
 	}
 
 	componentDidMount = () => {
-		Router.onRouteChangeStart = url => {
+		Router.onRouteChangeComplete = url => {
 			this.props.setInitialState();
 		};
 	};
 
 	componentWillUnmount = () => {
-		Router.onRouteChangeStart = null;
+		Router.onRouteChangeComplete = null;
 	};
 
 	validateAndPost = (event) => {

@@ -3,7 +3,7 @@ import React from 'react';
 import { graphql, withApollo, compose } from 'react-apollo';
 import gql from 'graphql-tag';
 import Link from 'next/link';
-import { Header, Button } from 'semantic-ui-react';
+import { Header, Button, Divider, Segment, Grid } from 'semantic-ui-react';
 import App from '../../components/App';
 import Layout from '../../components/Layout';
 import withData from '../../lib/withData';
@@ -23,14 +23,48 @@ class Rooms extends React.Component {
 		return { loggedInUser };
 	}
 
+	componentDidUpdate() {
+		this.props.data.refetch();
+	}
+
 	render() {
+		const { data } = this.props;
+
 		return (
 			<App>
 				<Layout pathname={this.props.url.pathname} loggedInUser={this.props.loggedInUser}>
-					<Header as='h1'>Rooms</Header>
 					<Link href="/rooms/new">
-						<Button primary icon="add" size="mini" content="Create new room" labelPosition="right" />
+						<Button primary floated="right" icon="add" content="Create new room" labelPosition="right" />
 					</Link>
+					<Header as='h1'>Rooms</Header>
+					<Divider />
+					<Segment.Group>
+						<Segment secondary loading={data.loading}>
+							<Grid columns={3}>
+								<Grid.Column width={12}>
+									<strong>Name</strong>
+								</Grid.Column>
+								<Grid.Column width={4}>
+									<strong>Capacity</strong>
+								</Grid.Column>
+							</Grid>
+						</Segment>
+						{!data.loading && data.allRooms.map(room => (
+							<Segment>
+								<Grid columns={3}>
+									<Grid.Column width={12}>
+										{room.name}
+									</Grid.Column>
+									<Grid.Column width={2}>
+										{room.capacity}
+									</Grid.Column>
+									<Grid.Column width={2}>
+										<Button size="mini">Edit</Button>
+									</Grid.Column>
+								</Grid>
+							</Segment>
+						))}
+					</Segment.Group>
 				</Layout>
 			</App>
 		);
