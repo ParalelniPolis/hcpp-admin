@@ -61,19 +61,6 @@ export default (state: State = initialState, action: Action) => {
 		case Constants.SET_INITIAL:
 			return initialState;
 
-		case 'APOLLO_MUTATION_ERROR':
-			return {
-				...state,
-				ui: {
-					...state.ui,
-					loading: false,
-					error: true
-				},
-				errors: {
-					apollo: action.error.message
-				}
-			};
-
 		default:
 			return state;
 	}

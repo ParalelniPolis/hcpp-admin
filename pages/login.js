@@ -18,7 +18,7 @@ import * as loginActions from '../actions/loginForm';
 
 import type { Element } from 'react';
 
-class Login extends React.Component {
+class Login extends React.PureComponent {
 	static async getInitialProps(context, apolloClient) {
 		const { loggedInUser } = await checkLoggedIn(context, apolloClient);
 

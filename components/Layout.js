@@ -9,7 +9,7 @@ import redirect from '../lib/redirect';
 
 import type { Element } from 'react';
 
-class Layout extends React.Component {
+class Layout extends React.PureComponent {
 
 	signout = () => {
 		document.cookie = cookie.serialize('token', '', {

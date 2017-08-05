@@ -17,7 +17,7 @@ import * as roomActions from '../../actions/rooms';
 
 import type { Element } from 'react';
 
-class NewRoom extends React.Component {
+class NewRoom extends React.PureComponent {
 	static async getInitialProps(context, apolloClient) {
 		const { loggedInUser } = await checkLoggedIn(context, apolloClient);
 

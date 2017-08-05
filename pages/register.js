@@ -18,7 +18,7 @@ import * as registerActions from '../actions/registerForm';
 
 import type { Element } from 'react';
 
-class Register extends React.Component {
+class Register extends React.PureComponent {
 	static async getInitialProps(context, apolloClient) {
 		const { loggedInUser } = await checkLoggedIn(context, apolloClient);
 
