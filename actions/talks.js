@@ -1,5 +1,5 @@
 // @flow
-import * as Constants from '../constants/loginForm';
+import * as Constants from '../constants/talks';
 
 export function loadingStart() {
 	return {
@@ -23,5 +23,18 @@ export function errorSet(errors: Object) {
 export function setInitialState() {
 	return {
 		type: Constants.SET_INITIAL
+	};
+}
+
+export function openDeleteModal(talkId: string) {
+	return {
+		type: Constants.OPEN_DELETE_MODAL,
+		value: talkId
+	};
+}
+
+export function closeDeleteModal() {
+	return {
+		type: Constants.CLOSE_DELETE_MODAL
 	};
 }

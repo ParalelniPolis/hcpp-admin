@@ -1,24 +1,34 @@
 // @flow
-import React from 'react';
+import * as React from 'react';
 import Router from 'next/router';
 import cookie from 'cookie';
 import { withApollo, compose } from 'react-apollo';
-import { Container, Divider, Dropdown, Grid, Header, Image, List, Menu, Segment } from 'semantic-ui-react';
-
-import redirect from '../lib/redirect';
+import { Container, Image, Menu } from 'semantic-ui-react';
 
 import type { Element } from 'react';
 
-class Layout extends React.PureComponent {
+import redirect from '../lib/redirect';
 
-	signout = () => {
-		document.cookie = cookie.serialize('token', '', {
-			maxAge: -1 // Expire the cookie immediately
-		});
+type Props = {
+	children: React.Node,
+	wide?: boolean,
+	pathname: string,
+	client: Object,
+	loggedInUser: {
+		user: {
+			name: string
+		}
+	}
+}
 
+class Layout extends React.PureComponent<Props> {
+	signout = (): void => {
 		// Force a reload of all the current queries now that the user is
 		// logged in, so we don't accidentally leave any state around.
 		this.props.client.resetStore().then(() => {
+			document.cookie = cookie.serialize('token', '', {
+				maxAge: -1 // Expire the cookie immediately
+			});
 			// Redirect to a more useful page when signed out
 			redirect({}, '/login');
 		});
@@ -27,12 +37,12 @@ class Layout extends React.PureComponent {
 	render(): Element<any> {
 		return (
 			<div>
-				<Menu fixed='top' inverted stackable>
+				<Menu fixed="top" inverted stackable>
 					<Container>
 						<Menu.Item header>
 							<Image
-								size='mini'
-								src='/static/images/logo-inverted.png'
+								size="mini"
+								src="/static/images/logo-inverted.png"
 								style={{ marginRight: '1.5em' }}
 							/>
 							HCPP Administration
@@ -70,7 +80,7 @@ class Layout extends React.PureComponent {
 					</Container>
 				</Menu>
 
-				<Container text style={{ marginTop: '7em' }}>
+				<Container text={!this.props.wide} style={{ marginTop: '7em' }}>
 					{this.props.children}
 				</Container>
 			</div>

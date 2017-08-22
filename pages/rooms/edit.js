@@ -17,11 +17,17 @@ import Layout from '../../components/Layout';
 
 import * as roomActions from '../../actions/rooms';
 
+type Room = {
+	id: string,
+	name: string,
+	capacity: number
+}
+
 type Props = {
+	setInitialState: Function,
 	errorSet: Function,
 	loadingStart: Function,
-	createRoom: Function,
-	setInitialState: Function,
+	updateRoom: Function,
 	loggedInUser: {
 		user: {
 			name: string
@@ -29,6 +35,13 @@ type Props = {
 	},
 	url: {
 		pathname: string
+	},
+	query: {
+		id: string
+	},
+	data: {
+		loading: Function,
+		Room: Room
 	},
 	rooms: {
 		ui: {
@@ -41,8 +54,17 @@ type Props = {
 		}
 	}
 }
-class NewRoom extends React.PureComponent<Props> {
+
+type State = {
+	room: {
+		name: string,
+		capacity: number
+	}
+}
+
+class EditRoom extends React.PureComponent<Props, State> {
 	static async getInitialProps(context, apolloClient) {
+		const { query } = context;
 		const { loggedInUser } = await checkLoggedIn(context, apolloClient);
 
 		if (!loggedInUser.user) {
@@ -51,8 +73,29 @@ class NewRoom extends React.PureComponent<Props> {
 			redirect(context, '/login');
 		}
 
-		return { loggedInUser };
+		return { loggedInUser, query };
 	}
+
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			room: {
+				name: '',
+				capacity: 0
+			}
+		};
+	}
+
+	componentDidMount = (): void => {
+		Router.onRouteChangeComplete = () => {
+			this.props.setInitialState();
+		};
+	};
+
+	componentWillUnmount = (): void => {
+		Router.onRouteChangeComplete = null;
+	};
 
 	validateAndPost = async (event): Promise<void> => {
 		/* global FormData */
@@ -78,9 +121,10 @@ class NewRoom extends React.PureComponent<Props> {
 			this.props.loadingStart();
 
 			try {
-				await this.props.createRoom({
+				await this.props.updateRoom({
 					variables: {
-						name: validator.escape(name),
+						id: this.props.query.id,
+						name,
 						capacity: parseInt(capacity, 10)
 					}
 				});
@@ -88,7 +132,6 @@ class NewRoom extends React.PureComponent<Props> {
 				Router.push('/rooms');
 			}
 			catch (error) {
-				console.error(error);
 				this.props.errorSet({ error });
 			}
 		}
@@ -96,24 +139,33 @@ class NewRoom extends React.PureComponent<Props> {
 
 	render(): Element<any> {
 		const { ui, errors } = this.props.rooms;
+		const room: Room = this.props.data.Room || {};
+		const loading = this.props.data.loading || !this.props.data.Room;
 
 		return (
 			<App>
 				<Layout pathname={this.props.url.pathname} loggedInUser={this.props.loggedInUser}>
-					<Header as="h1">Create new room</Header>
+					<Header as="h1">Edit room</Header>
 					<Divider />
-					<Form onSubmit={this.validateAndPost} error={ui.error} loading={ui.loading}>
-						<Form.Input
-							label="Room name"
-							name="name"
-							error={!!errors.name}
-						/>
-						<Form.Input
-							label="Room capacity"
-							name="capacity"
-							type="number"
-							error={!!errors.capacity}
-						/>
+					<Form onSubmit={this.validateAndPost} error={ui.error} loading={ui.loading || loading}>
+						{this.props.data && this.props.data.Room &&
+						[
+							<Form.Input
+								key="name"
+								label="Room name"
+								name="name"
+								error={!!errors.name}
+								defaultValue={room.name}
+							/>,
+							<Form.Input
+								key="capacity"
+								label="Room capacity"
+								name="capacity"
+								type="number"
+								error={!!errors.capacity}
+								defaultValue={room.capacity}
+							/>
+						]}
 						{ui.error &&
 						<Message error={ui.error}>
 							<Message.Header>Form has errors</Message.Header>
@@ -124,7 +176,7 @@ class NewRoom extends React.PureComponent<Props> {
 							</Message.List>
 						</Message>
 						}
-						<Button color="teal" size="large" type="submit">Create room</Button>
+						<Button color="teal" size="large" type="submit">Update room</Button>
 					</Form>
 				</Layout>
 			</App>
@@ -139,10 +191,27 @@ export default compose(
 	withApollo,
 	connect(state => ({ rooms: state.rooms }), { ...roomActions }),
 	graphql(
+		gql`query oneRoom($id: ID!) {
+			Room(id: $id){
+    		id
+      	name
+      	capacity
+  		}
+		}
+		`, {
+			options: ({ query }) => ({
+				variables: {
+					id: query.id
+				}
+			})
+		}
+	),
+	graphql(
 		// The `signinUser` mutation is provided by graph.cool by default
 		gql`
-      mutation createRoom($name: String! $capacity: Int!) {
-        createRoom(
+      mutation createRoom($id: ID!, $name: String! $capacity: Int!) {
+        updateRoom(
+        	id: $id
         	name: $name
           capacity: $capacity
         ) {
@@ -152,6 +221,6 @@ export default compose(
         }
       }
     `, {
-			name: 'createRoom'
+			name: 'updateRoom'
 		})
-)(NewRoom);
+)(EditRoom);

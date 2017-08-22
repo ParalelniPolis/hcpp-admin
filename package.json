@@ -1,29 +1,30 @@
 {
   "name": "hcpp-admin",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next",
     "build": "next build",
     "start": "next start",
     "flow": "flow",
-    "eslint": "eslint actions/*.js components/*.js constants/*.js pages/*.js reducers/*.js"
+    "eslint": "eslint *.js reducers pages components actions constants"
   },
   "dependencies": {
     "cookie": "^0.3.1",
     "graphql": "^0.10.5",
     "graphql-tag": "^2.4.2",
     "isomorphic-fetch": "^2.2.1",
+    "moment-timezone": "^0.5.13",
     "next": "^3.0.6",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",
     "react-apollo": "^1.4.14",
     "react-dom": "^15.5.4",
-    "react-dropzone": "^4.0.1",
+    "react-dropzone": "^4.1.0",
     "react-redux": "^5.0.6",
     "redux": "^3.6.0",
     "semantic-ui-css": "^2.2.12",
-    "semantic-ui-react": "^0.71.4",
+    "semantic-ui-react": "0.71.4",
     "validator": "^8.0.0"
   },
   "author": "Pavel Ševčík <pajaseviwow@gmail.com>",
@@ -32,12 +33,12 @@
     "babel-eslint": "7",
     "babel-plugin-lodash": "^3.2.11",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "eslint": "^4.4.1",
+    "eslint": "^4.5.0",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.2.1",
-    "flow-bin": "^0.53.0",
+    "flow-bin": "^0.53.1",
     "flow-typed": "^2.1.5"
   }
 }

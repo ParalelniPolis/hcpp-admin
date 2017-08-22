@@ -2,12 +2,14 @@
 import React from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
-import { Button, Form, Grid, Header, Image, Input, Message, Segment } from 'semantic-ui-react';
+import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react';
 import { graphql, withApollo, compose } from 'react-apollo';
 import { connect } from 'react-redux';
 import cookie from 'cookie';
 import gql from 'graphql-tag';
 import validator from 'validator';
+
+import type { Element } from 'react';
 
 import withData from '../lib/withData';
 import redirect from '../lib/redirect';
@@ -16,10 +18,25 @@ import App from '../components/App';
 
 import * as loginActions from '../actions/loginForm';
 
-import type { Element } from 'react';
+type Props = {
+	setInitialState: Function,
+	errorSet: Function,
+	loadingStart: Function,
+	signin: Function,
+	loginForm: {
+		ui: {
+			error: boolean,
+			loading: boolean
+		},
+		errors: {
+			email: string,
+			password: string
+		}
+	}
+}
 
-class Login extends React.PureComponent {
-	static async getInitialProps(context, apolloClient) {
+class Login extends React.PureComponent<Props> {
+	static async getInitialProps(context, apolloClient): Object {
 		const { loggedInUser } = await checkLoggedIn(context, apolloClient);
 
 		if (loggedInUser.user) {
@@ -31,17 +48,17 @@ class Login extends React.PureComponent {
 		return {};
 	}
 
-	componentDidMount = () => {
-		Router.onRouteChangeComplete = url => {
+	componentDidMount = (): void => {
+		Router.onRouteChangeComplete = () => {
 			this.props.setInitialState();
 		};
 	};
 
-	componentWillUnmount = () => {
+	componentWillUnmount = (): void => {
 		Router.onRouteChangeComplete = null;
 	};
 
-	validateAndPost = (event) => {
+	validateAndPost = (event): void => {
 		/* global FormData */
 		const data = new FormData(event.target);
 
@@ -67,29 +84,30 @@ class Login extends React.PureComponent {
 		}
 	};
 
-	render() {
+	render(): Element<any> {
 		const { ui, errors } = this.props.loginForm;
 
 		return (
 			<App>
 				<style jsx global>{`
-      body {
-      	display: flex;
-      	justify-content: center;
-      	align-items: center;
-      }
-    `}</style>
+					body {
+						display: flex;
+						justify-content: center;
+						align-items: center;
+					}
+    		`}
+				</style>
 				<Grid
-					textAlign='center'
+					textAlign="center"
 					style={{ height: '100%' }}
-					verticalAlign='middle'
+					verticalAlign="middle"
 				>
 					<Grid.Column style={{ maxWidth: 450 }}>
-						<Header as='h2' color='teal' textAlign='center'>
-							<Image src='/static/images/logo.png' />
+						<Header as="h2" color="teal" textAlign="center">
+							<Image src="/static/images/logo.png" />
 							{' '}Log-in to your account
 						</Header>
-						<Form size='large' onSubmit={this.validateAndPost} error={ui.error} loading={ui.loading}>
+						<Form size="large" onSubmit={this.validateAndPost} error={ui.error} loading={ui.loading}>
 							<Segment stacked>
 								<Form.Input
 									fluid
@@ -118,11 +136,11 @@ class Login extends React.PureComponent {
 									</Message.List>
 								</Message>
 								}
-								<Button color='teal' fluid size='large' type="submit">Login</Button>
+								<Button color="teal" fluid size="large" type="submit">Login</Button>
 							</Segment>
 						</Form>
 						<Message>
-							New to us? <Link href='/register'><a>Sign Up</a></Link>
+							New to us? <Link href="/register"><a>Sign Up</a></Link>
 						</Message>
 					</Grid.Column>
 				</Grid>
@@ -151,13 +169,12 @@ export default compose(
 			name: 'signinWithEmail',
 			// Apollo's way of injecting new props which are passed to the component
 			props: ({
-								signinWithEmail,
-								// `client` is provided by the `withApollo` HOC
-								ownProps: { client }
-							}) => ({
+				signinWithEmail,
+				// `client` is provided by the `withApollo` HOC
+				ownProps: { client }
+			}) => ({
 				// `signin` is the name of the prop passed to the component
 				signin: ({ email, password }) => {
-
 					signinWithEmail({
 						variables: {
 							email,

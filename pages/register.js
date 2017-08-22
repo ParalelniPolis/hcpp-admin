@@ -2,12 +2,14 @@
 import React from 'react';
 import Link from 'next/link';
 import Router from 'next/router';
-import { Button, Form, Grid, Header, Image, Input, Message, Segment } from 'semantic-ui-react';
+import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react';
 import { graphql, withApollo, compose } from 'react-apollo';
 import { connect } from 'react-redux';
 import cookie from 'cookie';
 import gql from 'graphql-tag';
 import validator from 'validator';
+
+import type { Element } from 'react';
 
 import withData from '../lib/withData';
 import redirect from '../lib/redirect';
@@ -16,9 +18,27 @@ import App from '../components/App';
 
 import * as registerActions from '../actions/registerForm';
 
-import type { Element } from 'react';
 
-class Register extends React.PureComponent {
+type Props = {
+	setInitialState: Function,
+	errorSet: Function,
+	loadingStart: Function,
+	create: Function,
+	registerForm: {
+		ui: {
+			error: boolean,
+			loading: boolean
+		},
+		errors: {
+			name: string,
+			email: string,
+			password: string,
+			passwordAgain: string
+		}
+	}
+}
+
+class Register extends React.PureComponent<Props> {
 	static async getInitialProps(context, apolloClient) {
 		const { loggedInUser } = await checkLoggedIn(context, apolloClient);
 
@@ -32,7 +52,7 @@ class Register extends React.PureComponent {
 	}
 
 	componentDidMount = () => {
-		Router.onRouteChangeComplete = url => {
+		Router.onRouteChangeComplete = () => {
 			this.props.setInitialState();
 		};
 	};
@@ -69,13 +89,13 @@ class Register extends React.PureComponent {
 
 		this.props.errorSet(errors);
 
-		if(!Object.keys(errors).length) {
+		if (!Object.keys(errors).length) {
 			this.props.loadingStart();
 			this.props.create({ email, name, password });
-    }
+		}
 	};
 
-	render() {
+	render(): Element<any> {
 		const { ui, errors } = this.props.registerForm;
 
 		return (
@@ -88,16 +108,16 @@ class Register extends React.PureComponent {
       }
     `}</style>
 				<Grid
-					textAlign='center'
+					textAlign="center"
 					style={{ height: '100%' }}
-					verticalAlign='middle'
+					verticalAlign="middle"
 				>
 					<Grid.Column style={{ width: 320 }}>
-						<Header as='h2' color='teal' textAlign='center'>
-							<Image src='/static/images/logo.png' />
+						<Header as="h2" color="teal" textAlign="center">
+							<Image src="/static/images/logo.png" />
 							{' '}Create new account
 						</Header>
-						<Form size='large' onSubmit={this.validateAndPost} error={ui.error} loading={ui.loading}>
+						<Form size="large" onSubmit={this.validateAndPost} error={ui.error} loading={ui.loading}>
 							<Segment stacked>
 								<Form.Input
 									fluid
@@ -133,21 +153,21 @@ class Register extends React.PureComponent {
 									placeholder="Password again"
 									error={!!errors.passwordAgain}
 								/>
-                {ui.error &&
-									<Message error={ui.error}>
-										<Message.Header>Form has errors</Message.Header>
-										<Message.List>
-                      {Object.keys(errors).map(error => (
-												<Message.Item key={error}><strong>{errors[error]}</strong></Message.Item>
-											))}
-										</Message.List>
-									</Message>
-                }
-								<Button type='submit' color='teal' fluid size='large'>Create account</Button>
+								{ui.error &&
+								<Message error={ui.error}>
+									<Message.Header>Form has errors</Message.Header>
+									<Message.List>
+										{Object.keys(errors).map(error => (
+											<Message.Item key={error}><strong>{errors[error]}</strong></Message.Item>
+										))}
+									</Message.List>
+								</Message>
+								}
+								<Button type="submit" color="teal" fluid size="large">Create account</Button>
 							</Segment>
 						</Form>
 						<Message>
-							Already have an account? <Link href='/login'><a>Log in</a></Link>
+							Already have an account? <Link href="/login"><a>Log in</a></Link>
 						</Message>
 					</Grid.Column>
 				</Grid>
@@ -181,17 +201,16 @@ export default compose(
 			name: 'createWithEmail',
 			// Apollo's way of injecting new props which are passed to the component
 			props: ({
-								createWithEmail,
-								// `client` is provided by the `withApollo` HOC
-								ownProps: { client }
-							}) => ({
+				createWithEmail,
+				// `client` is provided by the `withApollo` HOC
+				ownProps: { client }
+			}) => ({
 				// `create` is the name of the prop passed to the component
 				create: ({ email, name, password }) => {
-
 					createWithEmail({
 						variables: {
-							email: email,
-							password: password,
+							email,
+							password,
 							name: validator.escape(name)
 						}
 					}).then(({ data: { signinUser: { token } } }) => {

@@ -5,7 +5,7 @@ import withData from '../lib/withData';
 import redirect from '../lib/redirect';
 import checkLoggedIn from '../lib/checkLoggedIn';
 
-class Index extends React.PureComponent {
+class Index extends React.PureComponent<void> {
 	static async getInitialProps(context, apolloClient) {
 		const { loggedInUser } = await checkLoggedIn(context, apolloClient);
 
@@ -21,7 +21,7 @@ class Index extends React.PureComponent {
 		return {};
 	}
 
-	render() {
+	render(): null {
 		return null;
 	}
 }

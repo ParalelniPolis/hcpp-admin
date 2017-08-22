@@ -14,9 +14,6 @@
     "__DEV__": true,
     "__SERVER__": true
   },
-  "ecmaFeatures": {
-    "jsx": true
-  },
   "rules": {
     "quotes": [
       2,
@@ -55,10 +52,18 @@
       2,
       "tab"
     ],
-    "react/jsx-space-before-closing": 2,
-    "react/jsx-tag-spacing": 2,
+    "react/jsx-tag-spacing": [
+			2,
+			{
+				"closingSlash": "never",
+				"beforeSelfClosing": "always",
+				"afterOpening": "never"
+			}
+		],
     "react/prop-types": 0,
     "react/no-string-refs": 0,
-    "react/sort-comp": 0
+    "react/sort-comp": 0,
+		"react/jsx-filename-extension": 0,
+		"jsx-a11y/href-no-hash": 0
   }
 }

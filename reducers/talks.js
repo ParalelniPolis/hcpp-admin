@@ -1,5 +1,5 @@
 // @flow
-import * as Constants from '../constants/rooms';
+import * as Constants from '../constants/talks';
 
 
 type State = {
@@ -10,7 +10,7 @@ type State = {
 	errors: {
 		[string]: string
 	},
-	deleteRoom: ?string,
+	deleteTalk: ?string,
 	editForm: {
 		name: ?string,
 		capacity: number
@@ -29,7 +29,7 @@ const initialState = {
 		error: false
 	},
 	errors: {},
-	deleteRoom: null,
+	deleteTalk: null,
 	editForm: {
 		name: null,
 		capacity: 0
@@ -71,13 +71,13 @@ export default (state: State = initialState, action: Action) => {
 		case Constants.OPEN_DELETE_MODAL:
 			return {
 				...state,
-				deleteRoom: action.value
+				deleteTalk: action.value
 			};
 
 		case Constants.CLOSE_DELETE_MODAL:
 			return {
 				...state,
-				deleteRoom: null
+				deleteTalk: null
 			};
 
 		case Constants.SET_INITIAL:

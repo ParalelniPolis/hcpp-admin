@@ -1,5 +1,5 @@
 // @flow
-import * as Constants from '../constants/rooms';
+import * as Constants from '../constants/speakers';
 
 export function loadingStart() {
 	return {
@@ -26,10 +26,17 @@ export function setInitialState() {
 	};
 }
 
-export function openDeleteModal(roomId: string) {
+export function imagePreviewAdd(photoUrl: string) {
+	return {
+		type: Constants.SET_PHOTO,
+		value: photoUrl
+	};
+}
+
+export function openDeleteModal(speakerId: string) {
 	return {
 		type: Constants.OPEN_DELETE_MODAL,
-		value: roomId
+		value: speakerId
 	};
 }
 

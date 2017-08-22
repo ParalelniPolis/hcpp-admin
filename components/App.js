@@ -1,11 +1,11 @@
 // @flow
-import React from 'react';
+import * as React from 'react';
 import Head from 'next/head';
 
-import type { Element, Children } from 'react';
+import type { Element } from 'react';
 
 type Props = {
-	children: Children
+	children: React.Node
 }
 
 const App = (props: Props): Element<any> => (

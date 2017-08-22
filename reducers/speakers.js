@@ -1,6 +1,5 @@
 // @flow
-import * as Constants from '../constants/rooms';
-
+import * as Constants from '../constants/speakers';
 
 type State = {
 	ui: {
@@ -10,11 +9,8 @@ type State = {
 	errors: {
 		[string]: string
 	},
-	deleteRoom: ?string,
-	editForm: {
-		name: ?string,
-		capacity: number
-	}
+	photoPreview: string,
+	deleteSpeaker: ?string
 }
 
 type Action = {
@@ -29,11 +25,8 @@ const initialState = {
 		error: false
 	},
 	errors: {},
-	deleteRoom: null,
-	editForm: {
-		name: null,
-		capacity: 0
-	}
+	photoPreview: '',
+	deleteSpeaker: null
 };
 
 export default (state: State = initialState, action: Action) => {
@@ -68,16 +61,22 @@ export default (state: State = initialState, action: Action) => {
 				}
 			};
 
+		case Constants.SET_PHOTO:
+			return {
+				...state,
+				photoPreview: action.value
+			};
+
 		case Constants.OPEN_DELETE_MODAL:
 			return {
 				...state,
-				deleteRoom: action.value
+				deleteSpeaker: action.value
 			};
 
 		case Constants.CLOSE_DELETE_MODAL:
 			return {
 				...state,
-				deleteRoom: null
+				deleteSpeaker: null
 			};
 
 		case Constants.SET_INITIAL:

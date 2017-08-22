@@ -8,3 +8,4 @@ export const SET_INITIAL = 'rooms/new/initialState';
 
 export const OPEN_DELETE_MODAL = 'rooms/openDeleteModal';
 export const CLOSE_DELETE_MODAL = 'rooms/closeDeleteModal';
+
