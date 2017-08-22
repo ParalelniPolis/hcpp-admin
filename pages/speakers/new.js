@@ -79,7 +79,7 @@ class NewSpeaker extends React.PureComponent<Props> {
 		const data = new FormData(event.target);
 		const imageData = new FormData();
 
-		imageData.append('data', new Blob([this.imageToUpload]));
+		imageData.append('data', this.imageToUpload);
 
 		event.preventDefault();
 		event.stopPropagation();
