@@ -113,7 +113,8 @@ class NewSpeaker extends React.PureComponent<Props> {
 				if (this.props.speakers.photoPreview) {
 					const photoResponse = await fetch('https://api.graph.cool/file/v1/cj5tidgts2joz01226i3j4zbp', {
 						method: 'POST',
-						body: imageData
+						body: imageData,
+						mode: 'no-cors'
 					});
 					const photo = await photoResponse.json();
 					photoId = await photo.id;
