@@ -116,7 +116,7 @@ class Talks extends React.PureComponent<Props> {
 											{talk.status}
 										</Label>
 									</Table.Cell>
-									<Table.Cell width={3} singleLine>
+									<Table.Cell width={3}>
 										{talk.name}
 									</Table.Cell>
 									<Table.Cell width={2} singleLine>

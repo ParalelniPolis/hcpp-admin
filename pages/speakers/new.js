@@ -121,14 +121,14 @@ class NewSpeaker extends React.PureComponent<Props> {
 
 				await this.props.createSpeaker({
 					variables: {
-						displayName: validator.escape(displayName),
+						displayName,
 						email: !validator.isEmpty(email) ? validator.normalizeEmail(email) : '',
 						phone,
 						photoId,
-						firstName: validator.escape(firstName),
-						lastName: validator.escape(lastName),
-						shortDescription: validator.escape(shortDescription),
-						longDescription: validator.escape(longDescription)
+						firstName,
+						lastName,
+						shortDescription,
+						longDescription
 					}
 				});
 				this.props.setInitialState();

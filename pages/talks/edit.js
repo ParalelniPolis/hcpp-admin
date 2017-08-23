@@ -148,8 +148,8 @@ class EditTalk extends React.PureComponent<Props, State> {
 				await this.props.updateTalk({
 					variables: {
 						id: this.props.query.id,
-						name: validator.escape(name),
-						description: validator.escape(description),
+						name,
+						description,
 						starts: starts ? moment.tz(starts, 'Europe/Prague').format() : null,
 						ends: ends ? moment.tz(ends, 'Europe/Prague').format() : null,
 						room: room || null,
@@ -236,10 +236,11 @@ class EditTalk extends React.PureComponent<Props, State> {
 								error={!!errors.description}
 								defaultValue={talk.description}
 							/>,
-							<Form.Group inline key="form-group-2">
+							<Form.Group grouped key="form-group-2">
 								<label>Speakers</label>
 								{this.props.data && this.props.data.allSpeakers && this.props.data.allSpeakers.map(speaker => (
 									<Form.Checkbox
+										width="12"
 										key={speaker.id}
 										name={speaker.id}
 										label={speaker.displayName}

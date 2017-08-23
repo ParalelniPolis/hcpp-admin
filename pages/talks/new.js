@@ -131,8 +131,8 @@ class NewTalk extends React.PureComponent<Props, State> {
 			try {
 				await this.props.createTalk({
 					variables: {
-						name: validator.escape(name),
-						description: validator.escape(description),
+						name,
+						description,
 						starts: starts ? moment.tz(starts, 'Europe/Prague').format() : null,
 						ends: ends ? moment.tz(ends, 'Europe/Prague').format() : null,
 						room: room || null,
@@ -199,10 +199,15 @@ class NewTalk extends React.PureComponent<Props, State> {
 							name="description"
 							error={!!errors.description}
 						/>
-						<Form.Group inline>
+						<Form.Group grouped>
 							<label>Speakers</label>
 							{this.props.data && this.props.data.allSpeakers && this.props.data.allSpeakers.map(speaker => (
-								<Form.Checkbox key={speaker.id} name={speaker.id} label={speaker.displayName} />
+								<Form.Checkbox
+									width="12"
+									key={speaker.id}
+									name={speaker.id}
+									label={speaker.displayName}
+								/>
 							))}
 						</Form.Group>
 						{ui.error &&
