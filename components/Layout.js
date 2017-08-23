@@ -2,6 +2,7 @@
 import * as React from 'react';
 import Router from 'next/router';
 import cookie from 'cookie';
+import gravatar from 'gravatar';
 import { withApollo, compose } from 'react-apollo';
 import { Container, Image, Menu } from 'semantic-ui-react';
 
@@ -16,7 +17,8 @@ type Props = {
 	client: Object,
 	loggedInUser: {
 		user: {
-			name: string
+			name: string,
+			email: string
 		}
 	}
 }
@@ -37,7 +39,7 @@ class Layout extends React.PureComponent<Props> {
 	render(): Element<any> {
 		return (
 			<div>
-				<Menu fixed="top" inverted stackable>
+				<Menu inverted stackable style={{ borderRadius: 0 }}>
 					<Container>
 						<Menu.Item header>
 							<Image
@@ -75,12 +77,19 @@ class Layout extends React.PureComponent<Props> {
 						>
 							Rooms
 						</Menu.Item>
-						<Menu.Item position="right" icon="user" content={this.props.loggedInUser.user.name} />
+						<Menu.Item position="right">
+							<img
+								style={{ marginRight: 10 }}
+								src={gravatar.url(this.props.loggedInUser.user.email, { protocol: 'https', s: '100' })}
+								alt=""
+							/>
+							{this.props.loggedInUser.user.name}
+						</Menu.Item>
 						<Menu.Item as="a" icon="sign out" onClick={this.signout} content="Log out" />
 					</Container>
 				</Menu>
 
-				<Container text={!this.props.wide} style={{ marginTop: '7em' }}>
+				<Container text={!this.props.wide} style={{ marginTop: '2em' }}>
 					{this.props.children}
 				</Container>
 			</div>
