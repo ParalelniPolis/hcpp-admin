@@ -31,6 +31,7 @@ type Speaker = {
 	status: 'ACTIVE' | 'INACTIVE',
 	shortDescription: string,
 	longDescription: string,
+	organization: string,
 	photo: {
 		id: string,
 		url: string
@@ -70,7 +71,8 @@ type Props = {
 			email: string,
 			phone: string,
 			shortDescription: string,
-			longDescription: string
+			longDescription: string,
+			organization: string
 		},
 		photoPreview: string
 	}
@@ -128,6 +130,7 @@ class EditSpeaker extends React.PureComponent<Props> {
 		const shortDescription = data.get('shortDescription');
 		const longDescription = data.get('longDescription');
 		const status = data.get('status');
+		const organization = data.get('organization');
 
 		if (validator.isEmpty(displayName)) {
 			errors.displayName = 'Display name is empty';
@@ -161,6 +164,7 @@ class EditSpeaker extends React.PureComponent<Props> {
 						displayName,
 						email: !validator.isEmpty(email) ? validator.normalizeEmail(email) : '',
 						phone,
+						organization,
 						photoId,
 						firstName,
 						lastName,
@@ -256,6 +260,12 @@ class EditSpeaker extends React.PureComponent<Props> {
 										defaultValue={speaker && speaker.phone}
 									/>
 									<Form.Input
+										label="Organization"
+										name="organization"
+										error={!!errors.organization}
+										defaultValue={speaker && speaker.organization}
+									/>
+									<Form.Input
 										label="Short description"
 										name="shortDescription"
 										error={!!errors.shortDescription}
@@ -323,6 +333,7 @@ export default compose(
       	position
       	email
       	phone
+      	organization
       	firstName
       	lastName
         displayName
@@ -345,12 +356,13 @@ export default compose(
 	),
 	graphql(
 		gql`
-      mutation updateSpeaker($id: ID!, $displayName: String! $email: String, $firstName: String, $lastName: String, $shortDescription: String, $longDescription: String, $phone: String, $photoId: ID, $status: SpeakerStatus!) {
+      mutation updateSpeaker($id: ID!, $displayName: String! $email: String, $organization: String, $firstName: String, $lastName: String, $shortDescription: String, $longDescription: String, $phone: String, $photoId: ID, $status: SpeakerStatus!) {
         updateSpeaker(
         	id: $id
         	displayName: $displayName
         	email: $email
         	phone: $phone
+        	organization: $organization
         	firstName: $firstName
         	lastName: $lastName
         	shortDescription: $shortDescription

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import gql from 'graphql-tag';
 import Link from 'next/link';
 import Router from 'next/router';
-import { Header, Divider, Button, Modal, Table, Loader, Label } from 'semantic-ui-react';
+import { Header, Divider, Button, Modal, Table, Loader, Label, Icon } from 'semantic-ui-react';
 
 import type { Element } from 'react';
 
@@ -36,6 +36,7 @@ type Speaker = {
 
 type Props = {
 	deleteSpeaker: Function,
+	updateSpeakerPosition: Function,
 	openDeleteModal: Function,
 	closeDeleteModal: Function,
 	url: {
@@ -79,6 +80,16 @@ class Speakers extends React.PureComponent<Props> {
 		Router.onRouteChangeComplete = null;
 	};
 
+	moveSpeakerUp = (speakerId: string, speakerPosition: number, previousSpeakerId: string): void => {
+		this.props.updateSpeakerPosition({ variables: { id: speakerId, position: speakerPosition - 1 } });
+		this.props.updateSpeakerPosition({ variables: { id: previousSpeakerId, position: speakerPosition } });
+	};
+
+	moveSpeakerDown = (speakerId: string, speakerPosition: number, nextSpeakerId: string): void => {
+		this.props.updateSpeakerPosition({ variables: { id: speakerId, position: speakerPosition + 1 } });
+		this.props.updateSpeakerPosition({ variables: { id: nextSpeakerId, position: speakerPosition } });
+	};
+
 	render(): Element<any> {
 		const { data } = this.props;
 
@@ -90,20 +101,25 @@ class Speakers extends React.PureComponent<Props> {
 					</Link>
 					<Header as="h1">Speakers</Header>
 					<Divider />
-					<Table striped columns={5}>
+					<Table striped columns={6}>
 						<Table.Header>
 							<Table.Row>
+								<Table.HeaderCell width={1} />
 								<Table.HeaderCell width={1} />
 								<Table.HeaderCell width={1}>Status</Table.HeaderCell>
 								<Table.HeaderCell width={3}>Name</Table.HeaderCell>
 								<Table.HeaderCell width={3}>E-mail</Table.HeaderCell>
-								<Table.HeaderCell width={6}>Bio</Table.HeaderCell>
+								<Table.HeaderCell width={5}>Bio</Table.HeaderCell>
 								<Table.HeaderCell width={2} />
 							</Table.Row>
 						</Table.Header>
 						<Table.Body>
-							{!data.loading && data.allSpeakers.map(speaker => (
+							{!data.loading && data.allSpeakers.map((speaker, speakerIndex) => (
 								<Table.Row key={speaker.id}>
+									<Table.Cell width={1} singleLine>
+										{speakerIndex !== 0 && <Icon name="arrow up" circular link onClick={() => this.moveSpeakerUp(speaker.id, speaker.position, data.allSpeakers[speakerIndex - 1].id)} />}
+										{speakerIndex !== data.allSpeakers.length - 1 && <Icon name="arrow down" circular link onClick={() => this.moveSpeakerDown(speaker.id, speaker.position, data.allSpeakers[speakerIndex + 1].id)} />}
+									</Table.Cell>
 									<Table.Cell width={1} singleLine>
 										{speaker.photo ?
 											<img src={speaker.photo.url} alt={speaker.displayName} width={40} />
@@ -128,7 +144,7 @@ class Speakers extends React.PureComponent<Props> {
 											<a href={`mailto:${speaker.email}`}>{speaker.email}</a>
 										}
 									</Table.Cell>
-									<Table.Cell width={6}>
+									<Table.Cell width={5}>
 										{speaker.shortDescription}
 									</Table.Cell>
 									<Table.Cell width={2} textAlign="right" singleLine>
@@ -203,7 +219,7 @@ export default compose(
 		// The `signinUser` mutation is provided by graph.cool by default
 		gql`
       query speakersQuery {
-        allSpeakers {
+        allSpeakers(orderBy: position_ASC) {
         	id
         	position
         	email
@@ -232,6 +248,23 @@ export default compose(
 			}
 		`, {
 			name: 'deleteSpeaker',
+			options: {
+				refetchQueries: ['speakersQuery']
+			}
+		}
+	),
+	graphql(
+		gql`
+			mutation updateSpeakerPosition($id: ID!, $position: Int) {
+				updateSpeaker(
+					id: $id
+					position: $position
+				) {
+					id
+				}
+			}
+		`, {
+			name: 'updateSpeakerPosition',
 			options: {
 				refetchQueries: ['speakersQuery']
 			}

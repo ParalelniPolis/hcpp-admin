@@ -20,6 +20,10 @@ import Layout from '../../components/Layout';
 
 import * as speakerActions from '../../actions/speakers';
 
+type Speaker = {
+	position: number
+}
+
 type Props = {
 	imagePreviewAdd: Function,
 	errorSet: Function,
@@ -34,6 +38,9 @@ type Props = {
 			name: string
 		}
 	},
+	data: {
+		allSpeakers: Array<Speaker>
+	},
 	speakers: {
 		ui: {
 			error: boolean,
@@ -46,7 +53,8 @@ type Props = {
 			email: string,
 			phone: string,
 			shortDescription: string,
-			longDescription: string
+			longDescription: string,
+			organization: string
 		},
 		photoPreview: string
 	}
@@ -92,6 +100,9 @@ class NewSpeaker extends React.PureComponent<Props> {
 		const lastName = data.get('lastName');
 		const shortDescription = data.get('shortDescription');
 		const longDescription = data.get('longDescription');
+		const organization = data.get('organization');
+
+		const position = this.props.data.allSpeakers.length;
 
 		if (validator.isEmpty(displayName)) {
 			errors.displayName = 'Display name is empty';
@@ -124,11 +135,13 @@ class NewSpeaker extends React.PureComponent<Props> {
 						displayName,
 						email: !validator.isEmpty(email) ? validator.normalizeEmail(email) : '',
 						phone,
+						organization,
 						photoId,
 						firstName,
 						lastName,
 						shortDescription,
-						longDescription
+						longDescription,
+						position
 					}
 				});
 				this.props.setInitialState();
@@ -201,6 +214,11 @@ class NewSpeaker extends React.PureComponent<Props> {
 									error={!!errors.phone}
 								/>
 								<Form.Input
+									label="Organization"
+									name="organization"
+									error={!!errors.organization}
+								/>
+								<Form.Input
 									label="Short description"
 									name="shortDescription"
 									error={!!errors.shortDescription}
@@ -260,16 +278,27 @@ export default compose(
 	connect(state => ({ speakers: state.speakers }), { ...speakerActions }),
 	graphql(
 		gql`
-      mutation createSpeaker($displayName: String! $email: String, $firstName: String, $lastName: String, $shortDescription: String, $longDescription: String, $phone: String, $photoId: ID) {
+			query speakersQuery {
+				allSpeakers {
+					position
+				}
+			}
+		`
+	),
+	graphql(
+		gql`
+      mutation createSpeaker($displayName: String!, $email: String, $organization: String, $firstName: String, $lastName: String, $shortDescription: String, $longDescription: String, $phone: String, $position: Int!, $photoId: ID) {
         createSpeaker(
         	displayName: $displayName
         	email: $email
         	phone: $phone
+        	organization: $organization
         	firstName: $firstName
         	lastName: $lastName
         	shortDescription: $shortDescription
         	longDescription: $longDescription
-        	status: INACTIVE,
+        	status: INACTIVE
+        	position: $position
         	photoId: $photoId
         ) {
           id
