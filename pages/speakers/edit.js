@@ -150,7 +150,7 @@ class EditSpeaker extends React.PureComponent<Props> {
 			try {
 				let photoId = this.props.data.Speaker.photo ? this.props.data.Speaker.photo.id : null;
 				if (this.props.speakers.photoPreview) {
-					const photoResponse = await fetch('https://api.graph.cool/file/v1/cj5tidgts2joz01226i3j4zbp', {
+					const photoResponse = await fetch('https://api.graph.cool/file/v1/' + process.env.GRAPH_COOL_ID, {
 						method: 'POST',
 						body: imageData
 					});
