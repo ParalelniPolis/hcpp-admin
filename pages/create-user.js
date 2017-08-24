@@ -1,11 +1,9 @@
 // @flow
 import React from 'react';
-import Link from 'next/link';
 import Router from 'next/router';
-import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react';
+import { Button, Form, Grid, Header, Divider, Message, Segment } from 'semantic-ui-react';
 import { graphql, withApollo, compose } from 'react-apollo';
 import { connect } from 'react-redux';
-import cookie from 'cookie';
 import gql from 'graphql-tag';
 import validator from 'validator';
 
@@ -15,6 +13,7 @@ import withData from '../lib/withData';
 import redirect from '../lib/redirect';
 import checkLoggedIn from '../lib/checkLoggedIn';
 import App from '../components/App';
+import Layout from '../components/Layout';
 
 import * as registerActions from '../actions/registerForm';
 
@@ -24,6 +23,14 @@ type Props = {
 	errorSet: Function,
 	loadingStart: Function,
 	create: Function,
+	loggedInUser: {
+		user: {
+			name: string
+		}
+	},
+	url: {
+		pathname: string
+	},
 	registerForm: {
 		ui: {
 			error: boolean,
@@ -38,17 +45,17 @@ type Props = {
 	}
 }
 
-class Register extends React.PureComponent<Props> {
+class CreateUser extends React.PureComponent<Props> {
 	static async getInitialProps(context, apolloClient) {
 		const { loggedInUser } = await checkLoggedIn(context, apolloClient);
 
-		if (loggedInUser.user) {
+		if (!loggedInUser.user || loggedInUser.user.role !== 'MANAGER') {
 			// Already signed in? No need to continue.
 			// Throw them back to the main page
-			redirect(context, '/');
+			redirect(context, '/login');
 		}
 
-		return {};
+		return { loggedInUser };
 	}
 
 	componentDidMount = () => {
@@ -100,77 +107,69 @@ class Register extends React.PureComponent<Props> {
 
 		return (
 			<App>
-				<style jsx global>{`
-      body {
-      	display: flex;
-      	justify-content: center;
-      	align-items: center;
-      }
-    `}</style>
-				<Grid
-					textAlign="center"
-					style={{ height: '100%' }}
-					verticalAlign="middle"
-				>
-					<Grid.Column style={{ width: 320 }}>
-						<Header as="h2" color="teal" textAlign="center">
-							<Image src="/static/images/logo.png" />
-							{' '}Create new account
-						</Header>
-						<Form size="large" onSubmit={this.validateAndPost} error={ui.error} loading={ui.loading}>
-							<Segment stacked>
-								<Form.Input
-									fluid
-									icon="user"
-									iconPosition="left"
-									name="name"
-									placeholder="Full name"
-									error={!!errors.name}
-								/>
-								<Form.Input
-									fluid
-									icon="mail"
-									iconPosition="left"
-									name="email"
-									placeholder="E-mail address"
-									error={!!errors.email}
-								/>
-								<Form.Input
-									fluid
-									icon="lock"
-									iconPosition="left"
-									name="password"
-									type="password"
-									placeholder="Password"
-									error={!!errors.password}
-								/>
-								<Form.Input
-									fluid
-									icon="lock"
-									iconPosition="left"
-									name="passwordAgain"
-									type="password"
-									placeholder="Password again"
-									error={!!errors.passwordAgain}
-								/>
-								{ui.error &&
-								<Message error={ui.error}>
-									<Message.Header>Form has errors</Message.Header>
-									<Message.List>
-										{Object.keys(errors).map(error => (
-											<Message.Item key={error}><strong>{errors[error]}</strong></Message.Item>
-										))}
-									</Message.List>
-								</Message>
-								}
-								<Button type="submit" color="teal" fluid size="large">Create account</Button>
-							</Segment>
-						</Form>
-						<Message>
-							Already have an account? <Link href="/login"><a>Log in</a></Link>
-						</Message>
-					</Grid.Column>
-				</Grid>
+				<Layout pathname={this.props.url.pathname} loggedInUser={this.props.loggedInUser}>
+					<Header as="h1">
+						Create new account
+					</Header>
+					<Divider />
+					<Grid
+						textAlign="center"
+						style={{ height: '100%' }}
+						verticalAlign="middle"
+					>
+						<Grid.Column style={{ maxWidth: '100%' }}>
+							<Form size="large" onSubmit={this.validateAndPost} error={ui.error} loading={ui.loading}>
+								<Segment stacked>
+									<Form.Input
+										fluid
+										icon="user"
+										iconPosition="left"
+										name="name"
+										placeholder="Full name"
+										error={!!errors.name}
+									/>
+									<Form.Input
+										fluid
+										icon="mail"
+										iconPosition="left"
+										name="email"
+										placeholder="E-mail address"
+										error={!!errors.email}
+									/>
+									<Form.Input
+										fluid
+										icon="lock"
+										iconPosition="left"
+										name="password"
+										type="password"
+										placeholder="Password"
+										error={!!errors.password}
+									/>
+									<Form.Input
+										fluid
+										icon="lock"
+										iconPosition="left"
+										name="passwordAgain"
+										type="password"
+										placeholder="Password again"
+										error={!!errors.passwordAgain}
+									/>
+									{ui.error &&
+									<Message error={ui.error}>
+										<Message.Header>Form has errors</Message.Header>
+										<Message.List>
+											{Object.keys(errors).map(error => (
+												<Message.Item key={error}><strong>{errors[error]}</strong></Message.Item>
+											))}
+										</Message.List>
+									</Message>
+									}
+									<Button type="submit" color="primary" fluid size="large">Create account</Button>
+								</Segment>
+							</Form>
+						</Grid.Column>
+					</Grid>
+				</Layout>
 			</App>
 		);
 	}
@@ -191,9 +190,6 @@ export default compose(
         createUser(name: $name, role: USER, authProvider: { email: { email: $email, password: $password }}) {
           id
         }
-        signinUser(email: { email: $email, password: $password }) {
-          token
-        }
       }
     `,
 		{
@@ -213,18 +209,8 @@ export default compose(
 							password,
 							name: validator.escape(name)
 						}
-					}).then(({ data: { signinUser: { token } } }) => {
-						// Store the token in cookie
-						document.cookie = cookie.serialize('token', token, {
-							maxAge: 30 * 24 * 60 * 60 // 30 days
-						});
-
-						// Force a reload of all the current queries now that the user is
-						// logged in
-						client.resetStore().then(() => {
-							// Now redirect to the homepage
-							redirect({}, '/');
-						});
+					}).then(() => {
+						Router.push('/');
 					}).catch((error) => {
 						// Something went wrong, such as incorrect password, or no network
 						// available, etc.
@@ -234,4 +220,4 @@ export default compose(
 			})
 		}
 	)
-)(Register);
+)(CreateUser);

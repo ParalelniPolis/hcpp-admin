@@ -1,6 +1,5 @@
 // @flow
 import React from 'react';
-import Link from 'next/link';
 import Router from 'next/router';
 import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react';
 import { graphql, withApollo, compose } from 'react-apollo';
@@ -139,9 +138,6 @@ class Login extends React.PureComponent<Props> {
 								<Button color="teal" fluid size="large" type="submit">Login</Button>
 							</Segment>
 						</Form>
-						<Message>
-							New to us? <Link href="/register"><a>Sign Up</a></Link>
-						</Message>
 					</Grid.Column>
 				</Grid>
 			</App>

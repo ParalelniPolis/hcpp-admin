@@ -4,7 +4,7 @@ import Router from 'next/router';
 import cookie from 'cookie';
 import gravatar from 'gravatar';
 import { withApollo, compose } from 'react-apollo';
-import { Container, Image, Menu } from 'semantic-ui-react';
+import { Container, Image, Menu, Dropdown } from 'semantic-ui-react';
 
 import type { Element } from 'react';
 
@@ -18,7 +18,8 @@ type Props = {
 	loggedInUser: {
 		user: {
 			name: string,
-			email: string
+			email: string,
+			role: 'USER' | 'MANAGER'
 		}
 	}
 }
@@ -77,15 +78,26 @@ class Layout extends React.PureComponent<Props> {
 						>
 							Rooms
 						</Menu.Item>
-						<Menu.Item position="right">
-							<img
-								style={{ marginRight: 10 }}
-								src={gravatar.url(this.props.loggedInUser.user.email, { protocol: 'https', s: '100' })}
-								alt=""
-							/>
-							{this.props.loggedInUser.user.name}
-						</Menu.Item>
-						<Menu.Item as="a" icon="sign out" onClick={this.signout} content="Log out" />
+						<Menu.Menu position="right">
+							{this.props.loggedInUser.user.role === 'MANAGER' &&
+								<Dropdown item text="Admin">
+									<Dropdown.Menu>
+										<Dropdown.Item onClick={() => Router.push({ pathname: '/create-user' })}>
+											Create user
+										</Dropdown.Item>
+									</Dropdown.Menu>
+								</Dropdown>
+							}
+							<Menu.Item>
+								<img
+									style={{ marginRight: 10 }}
+									src={gravatar.url(this.props.loggedInUser.user.email, { protocol: 'https', s: '100' })}
+									alt=""
+								/>
+								{this.props.loggedInUser.user.name}
+							</Menu.Item>
+							<Menu.Item as="a" icon="sign out" onClick={this.signout} content="Log out" />
+						</Menu.Menu>
 					</Container>
 				</Menu>
 
