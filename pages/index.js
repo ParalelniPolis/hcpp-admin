@@ -2,7 +2,7 @@
 import React from 'react';
 import { graphql, withApollo, compose } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Header, Divider, Statistic, Icon } from 'semantic-ui-react';
+import { Header, Divider, Statistic, Icon, Loader } from 'semantic-ui-react';
 
 import type { Element } from 'react';
 
@@ -52,8 +52,25 @@ class Index extends React.PureComponent<Props> {
 	}
 
 	render(): Element<any> {
-		const activeSpeakers = this.props.data.allSpeakers.filter(speaker => speaker.status === 'ACTIVE');
-		const activeTalks = this.props.data.allTalks.filter(talk => talk.status === 'ACTIVE');
+		let activeSpeakers = [];
+		let activeTalks = [];
+
+		if(this.props.data.loading) {
+			return (
+				<App>
+					<Layout pathname={this.props.url.pathname} loggedInUser={this.props.loggedInUser} wide>
+						<Header as="h1">Dashboard</Header>
+						<Divider />
+						<Loader />
+					</Layout>
+				</App>
+			);
+		}
+
+		if (this.props.data && this.props.data.allSpeakers && this.props.data.allTalks) {
+			activeSpeakers = this.props.data.allSpeakers.filter(speaker => speaker.status === 'ACTIVE');
+			activeTalks = this.props.data.allTalks.filter(talk => talk.status === 'ACTIVE');
+		}
 
 		return (
 			<App>
