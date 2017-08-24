@@ -89,7 +89,7 @@ class Layout extends React.PureComponent<Props> {
 					</Container>
 				</Menu>
 
-				<Container text={!this.props.wide} style={{ marginTop: '2em' }}>
+				<Container text={!this.props.wide} style={{ marginTop: '2em', marginBottom: '2em' }}>
 					{this.props.children}
 				</Container>
 			</div>
