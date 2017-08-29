@@ -71,15 +71,15 @@ class Talks extends React.PureComponent<Props> {
 		return { loggedInUser };
 	}
 
-	componentDidMount = (): void => {
+	componentDidMount(): void {
 		Router.onRouteChangeComplete = () => {
 			this.props.data.refetch();
 		};
-	};
+	}
 
-	componentWillUnmount = (): void => {
+	componentWillUnmount(): void {
 		Router.onRouteChangeComplete = null;
-	};
+	}
 
 	render(): Element<any> {
 		return (

@@ -71,15 +71,15 @@ class Speakers extends React.PureComponent<Props> {
 		return { loggedInUser };
 	}
 
-	componentDidMount = (): void => {
+	componentDidMount(): void {
 		Router.onRouteChangeComplete = () => {
 			this.props.data.refetch();
 		};
-	};
+	}
 
-	componentWillUnmount = (): void => {
+	componentWillUnmount(): void {
 		Router.onRouteChangeComplete = null;
-	};
+	}
 
 	moveSpeakerUp = (speakerId: string, speakerPosition: number, previousSpeakerId: string): void => {
 		this.props.updateSpeakerPosition({ variables: { id: speakerId, position: speakerPosition - 1 } });
