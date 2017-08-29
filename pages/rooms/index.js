@@ -5,12 +5,13 @@ import { graphql, withApollo, compose } from 'react-apollo';
 import gql from 'graphql-tag';
 import Link from 'next/link';
 import Router from 'next/router';
-import { Header, Button, Divider, Table, Modal } from 'semantic-ui-react';
+import { Header, Button, Divider, Modal } from 'semantic-ui-react';
 
 import type { Element } from 'react';
 
 import App from '../../components/App';
 import Layout from '../../components/Layout';
+import RoomList from '../../components/RoomList';
 import withData from '../../lib/withData';
 import redirect from '../../lib/redirect';
 import checkLoggedIn from '../../lib/checkLoggedIn';
@@ -69,8 +70,6 @@ class Rooms extends React.PureComponent<Props> {
 	};
 
 	render(): Element<any> {
-		const { data } = this.props;
-
 		return (
 			<App>
 				<Layout pathname={this.props.url.pathname} loggedInUser={this.props.loggedInUser} wide>
@@ -79,43 +78,11 @@ class Rooms extends React.PureComponent<Props> {
 					</Link>
 					<Header as="h1">Rooms</Header>
 					<Divider />
-					<Table striped columns={3}>
-						<Table.Header>
-							<Table.Row>
-								<Table.HeaderCell width={7}>Name</Table.HeaderCell>
-								<Table.HeaderCell width={7}>Capacity</Table.HeaderCell>
-								<Table.HeaderCell width={2} />
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{!data.loading && data.allRooms.map(room => (
-								<Table.Row key={room.id}>
-									<Table.Cell width={3} singleLine>
-										{room.name}
-									</Table.Cell>
-									<Table.Cell width={3} singleLine>
-										{room.capacity}
-									</Table.Cell>
-									<Table.Cell width={2} singleLine>
-										<Button
-											primary
-											size="tiny"
-											icon="edit"
-											content="Edit"
-											onClick={() => Router.push(`/rooms/edit?id=${room.id}`)}
-										/>
-										<Button
-											negative
-											size="tiny"
-											icon="trash"
-											content="Delete"
-											onClick={() => this.props.openDeleteModal(room.id)}
-										/>
-									</Table.Cell>
-								</Table.Row>
-							))}
-						</Table.Body>
-					</Table>
+					<RoomList
+						loading={this.props.data.loading}
+						rooms={this.props.data.allRooms}
+						openDeleteModal={this.props.openDeleteModal}
+					/>
 					<Modal
 						size="tiny"
 						dimmer="blurring"
