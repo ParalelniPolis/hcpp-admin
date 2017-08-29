@@ -101,7 +101,7 @@ class Speakers extends React.PureComponent<Props> {
 					</Link>
 					<Header as="h1">Speakers</Header>
 					<Divider />
-					<Table striped columns={6}>
+					<Table striped columns={7}>
 						<Table.Header>
 							<Table.Row>
 								<Table.HeaderCell width={1} />
@@ -167,7 +167,7 @@ class Speakers extends React.PureComponent<Props> {
 							))}
 							{data.loading &&
 							<Table.Row>
-								<Table.Cell colSpan={5}>
+								<Table.Cell colSpan={7}>
 									<Loader active inline="centered" />
 								</Table.Cell>
 							</Table.Row>
