@@ -11,6 +11,7 @@ import type { Element } from 'react';
 
 import App from '../../components/App';
 import Layout from '../../components/Layout';
+import SpeakerList from '../../components/SpeakerList';
 import withData from '../../lib/withData';
 import redirect from '../../lib/redirect';
 import checkLoggedIn from '../../lib/checkLoggedIn';
@@ -91,8 +92,6 @@ class Speakers extends React.PureComponent<Props> {
 	};
 
 	render(): Element<any> {
-		const { data } = this.props;
-
 		return (
 			<App>
 				<Layout pathname={this.props.url.pathname} loggedInUser={this.props.loggedInUser} wide>
@@ -101,79 +100,13 @@ class Speakers extends React.PureComponent<Props> {
 					</Link>
 					<Header as="h1">Speakers</Header>
 					<Divider />
-					<Table striped columns={7}>
-						<Table.Header>
-							<Table.Row>
-								<Table.HeaderCell width={1} />
-								<Table.HeaderCell width={1} />
-								<Table.HeaderCell width={1}>Status</Table.HeaderCell>
-								<Table.HeaderCell width={3}>Name</Table.HeaderCell>
-								<Table.HeaderCell width={3}>E-mail</Table.HeaderCell>
-								<Table.HeaderCell width={5}>Bio</Table.HeaderCell>
-								<Table.HeaderCell width={2} />
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{!data.loading && data.allSpeakers.map((speaker, speakerIndex) => (
-								<Table.Row key={speaker.id}>
-									<Table.Cell width={1} singleLine>
-										{speakerIndex !== 0 && <Icon name="arrow up" circular link onClick={() => this.moveSpeakerUp(speaker.id, speaker.position, data.allSpeakers[speakerIndex - 1].id)} />}
-										{speakerIndex !== data.allSpeakers.length - 1 && <Icon name="arrow down" circular link onClick={() => this.moveSpeakerDown(speaker.id, speaker.position, data.allSpeakers[speakerIndex + 1].id)} />}
-									</Table.Cell>
-									<Table.Cell width={1} singleLine>
-										{speaker.photo ?
-											<img src={speaker.photo.url} alt={speaker.displayName} width={40} />
-											:
-											<img src="/static/images/speaker-avatar.png" alt="" width={40} />
-										}
-									</Table.Cell>
-									<Table.Cell width={1} singleLine>
-										<Label
-											size="tiny"
-											color={speaker.status === 'ACTIVE' ? 'green' : null}
-											horizontal
-										>
-											{speaker.status}
-										</Label>
-									</Table.Cell>
-									<Table.Cell width={3} singleLine>
-										{speaker.displayName}
-									</Table.Cell>
-									<Table.Cell width={3} singleLine>
-										{speaker.email &&
-											<a href={`mailto:${speaker.email}`}>{speaker.email}</a>
-										}
-									</Table.Cell>
-									<Table.Cell width={5}>
-										{speaker.shortDescription}
-									</Table.Cell>
-									<Table.Cell width={2} textAlign="right" singleLine>
-										<Button
-											primary
-											size="tiny"
-											icon="edit"
-											content="Edit"
-											onClick={() => Router.push(`/speakers/edit?id=${speaker.id}`)}
-										/>
-										<Button
-											negative
-											size="tiny"
-											icon="trash"
-											content="Delete"
-											onClick={() => this.props.openDeleteModal(speaker.id)}
-										/>
-									</Table.Cell>
-								</Table.Row>
-							))}
-							{data.loading &&
-							<Table.Row>
-								<Table.Cell colSpan={7}>
-									<Loader active inline="centered" />
-								</Table.Cell>
-							</Table.Row>
-							}
-						</Table.Body>
-					</Table>
+					<SpeakerList
+						loading={this.props.data.loading}
+						speakers={this.props.data.allSpeakers}
+						moveSpeakerUp={this.moveSpeakerUp}
+						moveSpeakerDown={this.moveSpeakerDown}
+						openDeleteModal={this.props.openDeleteModal}
+					/>
 					<Modal
 						size="tiny"
 						dimmer="blurring"
