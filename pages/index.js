@@ -55,7 +55,7 @@ class Index extends React.PureComponent<Props> {
 		let activeSpeakers = [];
 		let activeTalks = [];
 
-		if(this.props.data.loading) {
+		if (this.props.data.loading) {
 			return (
 				<App>
 					<Layout pathname={this.props.url.pathname} loggedInUser={this.props.loggedInUser} wide>

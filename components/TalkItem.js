@@ -6,19 +6,7 @@ import { Table, Button, Label } from 'semantic-ui-react';
 
 type Speaker = {
 	id: string,
-	position: number,
-	email: string,
-	phone: string,
-	firstName: string,
-	lastName: string,
-	displayName: string,
-	status: 'ACTIVE' | 'INACTIVE',
-	shortDescription: string,
-	longDescription: string,
-	photo: {
-		id: string,
-		url: string
-	}
+	displayName: string
 }
 
 type Talk = {

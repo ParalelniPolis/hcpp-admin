@@ -197,9 +197,7 @@ export default compose(
 			name: 'createWithEmail',
 			// Apollo's way of injecting new props which are passed to the component
 			props: ({
-				createWithEmail,
-				// `client` is provided by the `withApollo` HOC
-				ownProps: { client }
+				createWithEmail
 			}) => ({
 				// `create` is the name of the prop passed to the component
 				create: ({ email, name, password }) => {

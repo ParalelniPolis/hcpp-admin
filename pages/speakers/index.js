@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import gql from 'graphql-tag';
 import Link from 'next/link';
 import Router from 'next/router';
-import { Header, Divider, Button, Modal, Table, Loader, Label, Icon } from 'semantic-ui-react';
+import { Header, Divider, Button, Modal } from 'semantic-ui-react';
 
 import type { Element } from 'react';
 
