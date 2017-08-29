@@ -5,13 +5,13 @@ import { graphql, withApollo, compose } from 'react-apollo';
 import gql from 'graphql-tag';
 import Link from 'next/link';
 import Router from 'next/router';
-import { Header, Button, Divider, Table, Modal, Label } from 'semantic-ui-react';
-import moment from 'moment-timezone';
+import { Header, Button, Divider, Modal } from 'semantic-ui-react';
 
 import type { Element } from 'react';
 
 import App from '../../components/App';
 import Layout from '../../components/Layout';
+import TalkList from '../../components/TalkList';
 import withData from '../../lib/withData';
 import redirect from '../../lib/redirect';
 import checkLoggedIn from '../../lib/checkLoggedIn';
@@ -82,8 +82,6 @@ class Talks extends React.PureComponent<Props> {
 	};
 
 	render(): Element<any> {
-		const { data } = this.props;
-
 		return (
 			<App>
 				<Layout pathname={this.props.url.pathname} loggedInUser={this.props.loggedInUser} wide>
@@ -92,67 +90,11 @@ class Talks extends React.PureComponent<Props> {
 					</Link>
 					<Header as="h1">Talks</Header>
 					<Divider />
-					<Table striped columns={7}>
-						<Table.Header>
-							<Table.Row>
-								<Table.HeaderCell width={1}>Status</Table.HeaderCell>
-								<Table.HeaderCell width={3}>Name</Table.HeaderCell>
-								<Table.HeaderCell width={2}>Starts</Table.HeaderCell>
-								<Table.HeaderCell width={2}>Ends</Table.HeaderCell>
-								<Table.HeaderCell width={2}>Room</Table.HeaderCell>
-								<Table.HeaderCell width={4}>Speakers</Table.HeaderCell>
-								<Table.HeaderCell width={2} />
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{!data.loading && data.allTalks.map(talk => (
-								<Table.Row key={talk.id}>
-									<Table.Cell width={1} singleLine>
-										<Label
-											size="tiny"
-											color={talk.status === 'ACTIVE' ? 'green' : null}
-											horizontal
-										>
-											{talk.status}
-										</Label>
-									</Table.Cell>
-									<Table.Cell width={3}>
-										{talk.name}
-									</Table.Cell>
-									<Table.Cell width={2} singleLine>
-										{talk.starts && moment(talk.starts).format('DD. MM. YYYY - HH:mm')}
-									</Table.Cell>
-									<Table.Cell width={2} singleLine>
-										{talk.ends && moment(talk.ends).format('DD. MM. YYYY - HH:mm')}
-									</Table.Cell>
-									<Table.Cell width={2} singleLine>
-										{talk.room && talk.room.name}
-									</Table.Cell>
-									<Table.Cell width={4}>
-										{talk.speakers.map((speaker, index) => (
-											<span key={speaker.id}>{speaker.displayName}{index + 1 !== talk.speakers.length && ', '}</span>
-										))}
-									</Table.Cell>
-									<Table.Cell width={2} singleLine>
-										<Button
-											primary
-											size="tiny"
-											icon="edit"
-											content="Edit"
-											onClick={() => Router.push(`/talks/edit?id=${talk.id}`)}
-										/>
-										<Button
-											negative
-											size="tiny"
-											icon="trash"
-											content="Delete"
-											onClick={() => this.props.openDeleteModal(talk.id)}
-										/>
-									</Table.Cell>
-								</Table.Row>
-							))}
-						</Table.Body>
-					</Table>
+					<TalkList
+						loading={this.props.data.loading}
+						talks={this.props.data.allTalks}
+						openDeleteModal={this.props.openDeleteModal}
+					/>
 					<Modal
 						size="tiny"
 						dimmer="blurring"
