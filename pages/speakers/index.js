@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import gql from 'graphql-tag';
 import Link from 'next/link';
 import Router from 'next/router';
-import { Header, Divider, Button, Modal } from 'semantic-ui-react';
+import { Header, Divider, Button, Modal, Input } from 'semantic-ui-react';
 
 import type { Element } from 'react';
 
@@ -58,7 +58,11 @@ type Props = {
 	}
 }
 
-class Speakers extends React.PureComponent<Props> {
+type State = {
+	search: string
+}
+
+class Speakers extends React.PureComponent<Props, State> {
 	static async getInitialProps(context, apolloClient) {
 		const { loggedInUser } = await checkLoggedIn(context, apolloClient);
 
@@ -69,6 +73,14 @@ class Speakers extends React.PureComponent<Props> {
 		}
 
 		return { loggedInUser };
+	}
+
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			search: ''
+		};
 	}
 
 	componentDidMount(): void {
@@ -91,18 +103,29 @@ class Speakers extends React.PureComponent<Props> {
 		this.props.updateSpeakerPosition({ variables: { id: nextSpeakerId, position: speakerPosition } });
 	};
 
+	setSpeakerFilter = (event, { value }) => {
+		this.setState({
+			search: value
+		});
+	};
+
 	render(): Element<any> {
+		const filteredSpeakers = this.props.data.allSpeakers ? this.props.data.allSpeakers.filter(speaker => speaker.displayName.toLowerCase().indexOf(this.state.search.toLowerCase()) > -1) : [];
+
 		return (
 			<App>
 				<Layout pathname={this.props.url.pathname} loggedInUser={this.props.loggedInUser} wide>
 					<Link href="/speakers/new">
 						<Button primary floated="right" icon="add" content="Create new speaker" labelPosition="right" />
 					</Link>
-					<Header as="h1">Speakers</Header>
+					<Header as="h1">
+						Speakers
+					</Header>
+					<Input placeholder="Search speakers..." onChange={this.setSpeakerFilter} value={this.state.search} icon="search" />
 					<Divider />
 					<SpeakerList
 						loading={this.props.data.loading}
-						speakers={this.props.data.allSpeakers}
+						speakers={filteredSpeakers}
 						moveSpeakerUp={this.moveSpeakerUp}
 						moveSpeakerDown={this.moveSpeakerDown}
 						openDeleteModal={this.props.openDeleteModal}
