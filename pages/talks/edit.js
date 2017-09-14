@@ -207,14 +207,14 @@ class EditTalk extends React.PureComponent<Props, State> {
 									name="starts"
 									type="datetime-local"
 									error={!!errors.starts}
-									defaultValue={moment.tz(talk.starts, 'Europe/Prague').format('YYYY-MM-DDThh:mm')}
+									defaultValue={moment.tz(talk.starts, 'Europe/Prague').format('YYYY-MM-DDTHH:mm')}
 								/>
 								<Form.Input
 									label="Ends"
 									name="ends"
 									type="datetime-local"
 									error={!!errors.ends}
-									defaultValue={moment.tz(talk.ends, 'Europe/Prague').format('YYYY-MM-DDThh:mm')}
+									defaultValue={moment.tz(talk.ends, 'Europe/Prague').format('YYYY-MM-DDTHH:mm')}
 								/>
 								<Form.Select
 									label="Room"
