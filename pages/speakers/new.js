@@ -264,7 +264,8 @@ class NewSpeaker extends React.PureComponent<Props> {
 					.dropzone.reject {
 						background-color: #ff3333;
 					}
-				`}</style>
+				`}
+				</style>
 			</App>
 		);
 	}

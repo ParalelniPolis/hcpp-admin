@@ -76,17 +76,6 @@ class EditRoom extends React.PureComponent<Props, State> {
 		return { loggedInUser, query };
 	}
 
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			room: {
-				name: '',
-				capacity: 0
-			}
-		};
-	}
-
 	componentDidMount = (): void => {
 		Router.onRouteChangeComplete = () => {
 			this.props.setInitialState();
