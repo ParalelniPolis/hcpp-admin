@@ -170,7 +170,7 @@ class EditSpeaker extends React.PureComponent<Props> {
 						lastName,
 						shortDescription,
 						longDescription,
-						status: status === 'on' ? 'ACTIVE' : 'INACTIVE'
+						status: status === null ? 'INACTIVE' : 'ACTIVE'
 					}
 				});
 				this.props.setInitialState();

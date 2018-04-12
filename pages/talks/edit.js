@@ -154,7 +154,7 @@ class EditTalk extends React.PureComponent<Props, State> {
 						ends: ends ? moment.tz(ends, 'Europe/Prague').format() : null,
 						room: room || null,
 						speakers,
-						status: status === 'on' ? 'ACTIVE' : 'INACTIVE'
+						status: status === null ? 'INACTIVE' : 'ACTIVE'
 					}
 				});
 				this.props.setInitialState();
