@@ -140,7 +140,9 @@ export default compose(
 		// The `signinUser` mutation is provided by graph.cool by default
 		gql`
       query talksQuery {
-        allTalks {
+        allTalks(
+					orderBy: starts_ASC
+				) {
         	id
         	name
         	description

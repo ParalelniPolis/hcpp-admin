@@ -242,7 +242,9 @@ export default compose(
           name
           capacity
         }
-        allSpeakers {
+        allSpeakers(
+					orderBy: displayName_ASC
+				) {
         	id
         	displayName
         	photo {
