@@ -122,7 +122,7 @@ class EditTalk extends React.PureComponent<Props, State> {
 		const status = data.get('status');
 
 		const formSpeakers = this.props.data.allSpeakers.filter(speaker => (
-			!!data.get(speaker.id)
+			data.get(speaker.id) === ''
 		));
 
 		const speakers = formSpeakers.map(speaker => speaker.id);

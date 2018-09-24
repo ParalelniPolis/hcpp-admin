@@ -106,7 +106,7 @@ class NewTalk extends React.PureComponent<Props, State> {
 		const room = data.get('room');
 
 		const formSpeakers = this.props.data.allSpeakers.filter(speaker => (
-			!!data.get(speaker.id)
+			data.get(speaker.id) === ''
 		));
 
 		const speakers = formSpeakers.map(speaker => speaker.id);
