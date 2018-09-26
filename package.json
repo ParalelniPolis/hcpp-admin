@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "flow": "flow",
+		"test": "eslint && flow",
     "eslint": "eslint *.js reducers pages components actions constants"
   },
   "dependencies": {
